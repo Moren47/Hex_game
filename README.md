@@ -7,6 +7,8 @@ Implementation of simple Hex Board game using:
  - selectors  
 # Requirements
 Python 3.8.10+  
+# Launch the game in one window:
+$ pipenv run python server.py
 # Run server:
 $ pipenv run python server.py
 # Run 3 clients:
