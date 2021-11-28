@@ -8,7 +8,7 @@ Implementation of simple Hex Board game using:
 # Requirements
 Python 3.8.10+  
 # Launch the game in one window:
-$ pipenv run python server.py
+$ pipenv run python game.py
 # Run server:
 $ pipenv run python server.py
 # Run 3 clients:
