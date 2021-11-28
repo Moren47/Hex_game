@@ -1,5 +1,10 @@
 # Hex_game
-Implementation of simple Hex Board game using socket communication.  
+Implementation of simple Hex Board game using:
+ - tkinter  
+ - hexagonal grid 
+ - pathfinding algorithm  
+ - socket communication  
+ - selectors  
 # Requirements
 Python 3.8.10+  
 # First, clone this repository.
