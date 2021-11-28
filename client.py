@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import game
 from game import Game, Coord
 import socket
 import selectors
@@ -11,8 +14,8 @@ BUFFER_SIZE = server.BUFFER_SIZE
 class ClientController:
     def __init__(self, game_view, client_connection, hints=False):
         self.result = 0
-        self.turn = True  # BLUE
-        self.side = True  # BLUE
+        self.turn = game.BLUE_PLAYER
+        self.side = game.BLUE_PLAYER
         self.game_view = game_view
         self.client_connection = client_connection
         self.hints = hints
@@ -137,7 +140,7 @@ class Client:
             for key, mask in events:
                 return self.service_connection(key, mask)
         except KeyboardInterrupt:
-            print("caught keyboard interrupt, exiting")
+            print('CLIENT %i: Caught keyboard interrupt, exiting' % self.number)
             self.selector.close()
 
     def service_connection(self, key, mask):
@@ -205,7 +208,7 @@ def run_new_client(number):
 if __name__ == '__main__':
     import sys
 
-    number = int(sys.argv[1]) if sys.argv[1] else 0
+    number = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
     for n in range(number):
         c1 = multiprocessing.Process(target=run_new_client, args=(n+1, ))

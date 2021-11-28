@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import collections
 import heapq
 import tkinter
@@ -207,9 +209,13 @@ class HexTools:
         return queue
 
 
-GRAY = ['#e3e3e3', '#C7C7C7', '#4f4f4f']
-BLUE = ['#77bbd5', '#1D8FBA', '#0b394a', '#2bd4bf']
-RED = ['#ae8c8e', '#794044', '#30191b', '#e1434e']
+GRAY_COLORS = ['#e3e3e3', '#C7C7C7', '#4f4f4f']
+BLUE_COLORS = ['#77bbd5', '#1D8FBA', '#0b394a', '#2bd4bf']
+RED_COLORS = ['#ae8c8e', '#794044', '#30191b', '#e1434e']
+RED_PLAYER = 0
+BLUE_PLAYER = 1
+RED_WIN = 1
+BLUE_WIN = 2
 SIZE = 20, 12
 SCALE = 47
 CANVAS_SIZE = SIZE[0] * SCALE, SIZE[1] * SCALE
@@ -319,30 +325,30 @@ class Game:
 
     def draw_playground(self):
         for _hex in self.playground:
-            fill = GRAY[0]
+            fill = GRAY_COLORS[0]
             if _hex in self.boundary_blue:
-                fill = BLUE[2]
+                fill = BLUE_COLORS[2]
             if _hex in self.boundary_red:
-                fill = RED[2]
+                fill = RED_COLORS[2]
             if _hex in self.boundary_corners:
-                fill = GRAY[2]
+                fill = GRAY_COLORS[2]
             self.draw_hex(_hex, fill)
         self.clear_turn()
 
     def draw_turn(self, turn):
         self.draw_text(TURN_TEXT_POSITION, 'Next turn:')
         if turn:
-            self.draw_hex(TURN_HEX_POSITION, BLUE[1])
+            self.draw_hex(TURN_HEX_POSITION, BLUE_COLORS[1])
         else:
-            self.draw_hex(TURN_HEX_POSITION, RED[1])
+            self.draw_hex(TURN_HEX_POSITION, RED_COLORS[1])
         self.canvas.update()
 
     def draw_side(self, side):
         self.draw_text(SIDE_TEXT_POSITION, 'Your side:')
         if side:
-            self.draw_hex(SIDE_HEX_POSITION, BLUE[1])
+            self.draw_hex(SIDE_HEX_POSITION, BLUE_COLORS[1])
         else:
-            self.draw_hex(SIDE_HEX_POSITION, RED[1])
+            self.draw_hex(SIDE_HEX_POSITION, RED_COLORS[1])
         self.canvas.update()
 
     def draw_comment(self, comment):
@@ -354,7 +360,7 @@ class Game:
         self.canvas.update()
 
     def clear_turn(self):
-        self.draw_hex(TURN_HEX_POSITION, GRAY[1])
+        self.draw_hex(TURN_HEX_POSITION, GRAY_COLORS[1])
 
     def callback(self, event):
         point = Point(event.x - OFFSET_LEFT, event.y - OFFSET_TOP)
@@ -368,21 +374,21 @@ class Game:
     def add_hex(self, hex_coords, turn):
         if turn:
             self.list_of_blue.add(hex_coords)
-            self.draw_hex(hex_coords, BLUE[1])
+            self.draw_hex(hex_coords, BLUE_COLORS[1])
         else:
             self.list_of_red.add(hex_coords)
-            self.draw_hex(hex_coords, RED[1])
+            self.draw_hex(hex_coords, RED_COLORS[1])
 
     def draw_hints(self):
         finder = HintsFinder()
 
         hints = finder.find_all_hints(self.list_of_red, self.active_area)
         for h in hints:
-            self.draw_hex(h, RED[0])
+            self.draw_hex(h, RED_COLORS[0])
 
         hints = finder.find_all_hints(self.list_of_blue, self.active_area)
         for h in hints:
-            self.draw_hex(h, BLUE[0])
+            self.draw_hex(h, BLUE_COLORS[0])
 
     def check_result(self):
         one_red_boundary_1 = next(iter(self.boundary_red_1))
@@ -391,8 +397,8 @@ class Game:
         way = self.hex_tools.best_way(one_red_boundary_1, one_red_boundary_2, area=self.all_red)
         if way:
             for h in way - self.boundary_red:
-                self.draw_hex(h, fill=RED[3])
-            return 1
+                self.draw_hex(h, fill=RED_COLORS[3])
+            return RED_WIN
 
         one_blue_boundary_1 = next(iter(self.boundary_blue_1))
         one_blue_boundary_2 = next(iter(self.boundary_blue_2))
@@ -400,8 +406,8 @@ class Game:
         way = self.hex_tools.best_way(one_blue_boundary_1, one_blue_boundary_2, area=self.all_blue)
         if way:
             for h in way - self.boundary_blue:
-                self.draw_hex(h, fill=BLUE[3])
-            return 2
+                self.draw_hex(h, fill=BLUE_COLORS[3])
+            return BLUE_WIN
 
         return 0
 
@@ -442,7 +448,7 @@ class HintsFinder:
 class SimpleController:
     def __init__(self, game_view, hints=False):
         self.result = 0
-        self.turn = 1
+        self.turn = BLUE_PLAYER
         self.game_view = game_view
         self.game_view.draw_turn(self.turn)
         self.hints = hints
@@ -455,7 +461,7 @@ class SimpleController:
         self.game_view.add_hex(hex_object, self.turn)
         self.result = self.game_view.check_result()
         if self.result:
-            if self.result == 2:
+            if self.result == RED_WIN:
                 print('Blue win!')
             else:
                 print('Red win!')

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+
 import socket
 import selectors
 import types
+import game
 
 HOST = '127.0.0.1'
 PORT = 65431
@@ -16,21 +18,21 @@ class GamesBase:
 
     def add_player(self):
         if not self._waiting_room:
-            side = 0
+            side = game.RED_PLAYER
             if not self.games:
                 number = 1
             else:
                 number = max([c for g in self.games for c in g]) + 1
             self._waiting_room.append(number)
         else:
-            side = 1
+            side = game.BLUE_PLAYER
             opponent_number = self._waiting_room.pop(0)
             number = opponent_number + 1
             self.games.append([opponent_number, number])
 
         self.players_data[number] = types.SimpleNamespace(
             side=side,
-            turn=0,
+            turn=game.RED_PLAYER,
             move=None
         )
         return number
